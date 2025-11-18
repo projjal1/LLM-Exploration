@@ -8,14 +8,18 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 from langchain import hub
 from langchain.agents import create_tool_calling_agent, AgentExecutor
+from dotenv import load_dotenv
+import os
+
+# Load config from .env
+load_dotenv()
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 # Weather information search
-API_KEY = "USE your own API key"
-search = TavilySearchResults(max_results = 2, tavily_api_key=API_KEY)
+search = TavilySearchResults(max_results = 2, tavily_api_key=os.environ.get("TAVILY_API_KEY"))
 # result = search.invoke("what is the weather in malmo, sweden")
 # print(result)
 
@@ -39,7 +43,7 @@ tools = [search, retriever_tool]
 
 # define llm
 model = init_chat_model("mistral:7b", model_provider="ollama")
-response = model.invoke([HumanMessage(content="hi!")])
+# response = model.invoke([HumanMessage(content="hi!")])
 # print(response.content)
 
 # Get the prompt to use - you can modify this!
