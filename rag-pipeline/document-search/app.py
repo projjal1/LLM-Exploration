@@ -1,80 +1,65 @@
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
-from langchain.chains import RetrievalQA
-from langchain_community.chat_models import ChatOllama
+import os
 import warnings
+
+from langchain_chroma import Chroma
+from langchain_classic.chains import RetrievalQA
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-def process_index_docs(embeddings):
-    # File path for sample document
-    file_path = "nke-10k-2023.pdf"
-    # Load the document
-    loader = PyPDFLoader(file_path)
+PDF_PATH = "nke-10k-2023.pdf"
+COLLECTION_NAME = "financial-document-rag"
+PERSIST_DIR = "./chroma_langchain_db"
+MODEL_NAME = "llama3:8b"
+CHUNK_SIZE = 1000
+CHUNK_OVERLAP = 200
 
-    # Load the data in memory
+
+def process_index_docs(embeddings):
+    loader = PyPDFLoader(PDF_PATH)
     docs = loader.load()
 
-    # Data is loaded per page of pdf
-    # print(f"{docs[0].page_content[:200]}\n")
-    # print(docs[0].metadata)
-
-    # Split the text with overlap so as to not break important sentence
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, chunk_overlap=200, add_start_index=True
+        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP, add_start_index=True
     )
     all_splits = text_splitter.split_documents(docs)
 
-    # Show the length of splits
-    # print(len(all_splits))
-
-    # Show vector embeddings
-    vector_1 = embeddings.embed_query(all_splits[0].page_content)
-    # print(f"Generated vectors of length {len(vector_1)}\n")
-    # print(vector_1[:10])
-
-    # Connect to Chroma vector store
     vector_store = Chroma(
-        collection_name="financial-document-rag",
+        collection_name=COLLECTION_NAME,
         embedding_function=embeddings,
-        persist_directory="./chroma_langchain_db",  # Where to save data locally, remove if not necessary
+        persist_directory=PERSIST_DIR,
     )
-    print("Chroma object loaded")
-
-    # Index all documents
     vector_store.add_documents(documents=all_splits)
-    print("All documents indexed")
-
-
-import os
+    print(f"Indexed {len(all_splits)} chunks into '{COLLECTION_NAME}'")
 
 
 def main():
-    embeddings = OllamaEmbeddings(model="llama3:8b")
+    embeddings = OllamaEmbeddings(model=MODEL_NAME)
+
+    if not os.path.isdir(PERSIST_DIR):
+        process_index_docs(embeddings)
 
     vector_store = Chroma(
-        collection_name="financial-document-rag",
+        collection_name=COLLECTION_NAME,
         embedding_function=embeddings,
-        persist_directory="./chroma_langchain_db",
+        persist_directory=PERSIST_DIR,
     )
-
-    if not os.path.isdir("chroma_langchain_db"):
-        process_index_docs(embeddings)
 
     retriever = vector_store.as_retriever(
         search_type="similarity",
         search_kwargs={"k": 1},
     )
 
-    llm = ChatOllama(model="llama3:8b")
+    llm = ChatOllama(model=MODEL_NAME)
     qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
 
     queries = [
         "How many distribution centers does Nike have in the US?",
         "When was Nike founded?",
         "How were Nike's margins impacted in 2023?",
-        "Give a short summary of the document"
+        "Give a short summary of the document",
     ]
 
     for query in queries:

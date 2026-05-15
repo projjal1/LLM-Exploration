@@ -4,7 +4,16 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(python -m pytest test_app.py -v)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(where python *)",
+      "Bash(where py *)",
+      "Bash(where python3 *)",
+      "Bash(py -0)",
+      "Bash(py -3.11 -c \"import langchain_core\")",
+      "Bash(py -3.12 -c \"import langchain_core\")",
+      "Bash(py -3.10 -c \"import langchain_core\")",
+      "Bash(conda info *)",
+      "Bash(findstr /I \"langchain pypdf pytest chroma ollama\")"
     ]
   }
 }
