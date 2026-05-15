@@ -15,5 +15,29 @@
       "Bash(conda info *)",
       "Bash(findstr /I \"langchain pypdf pytest chroma ollama\")"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [ 
+          {
+            "type": "command",
+            "command": "echo read file >> hook.log"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [ 
+      {
+        "matcher": "Write", 
+        "hooks": [
+          {
+            "type": "command",
+            "command":"echo wrote file >> hook.log"
+          }
+        ]
+      }
+    ]
   }
 }
