@@ -49,38 +49,38 @@ def process_index_docs(embeddings):
 
 import os
 
-# Embedding function
-# # Model for getting embeddings for vector store
-embeddings = OllamaEmbeddings(model="llama3:8b")
 
-# Chroma vector store
-vector_store = Chroma(
-    collection_name="financial-document-rag",
-    embedding_function=embeddings,
-    persist_directory="./chroma_langchain_db",  # Where to save data locally, remove if not necessary
-)
+def main():
+    embeddings = OllamaEmbeddings(model="llama3:8b")
 
-# If data folder does not exist simply run pipeline
-if not os.path.isdir("chroma_langchain_db"):
-    process_index_docs(embeddings)
+    vector_store = Chroma(
+        collection_name="financial-document-rag",
+        embedding_function=embeddings,
+        persist_directory="./chroma_langchain_db",
+    )
 
-#Answer phase
-retriever = vector_store.as_retriever(
-    search_type="similarity",
-    search_kwargs={"k": 1},
-)
+    if not os.path.isdir("chroma_langchain_db"):
+        process_index_docs(embeddings)
 
-# Add Chat LLM to the retriever
-llm = ChatOllama(model="llama3:8b")
-qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+    retriever = vector_store.as_retriever(
+        search_type="similarity",
+        search_kwargs={"k": 1},
+    )
 
-queries = [
-    "How many distribution centers does Nike have in the US?",
-    "When was Nike founded?",
-    "How were Nike's margins impacted in 2023?",
-    "Give a short summary of the document"
-]
+    llm = ChatOllama(model="llama3:8b")
+    qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
 
-for query in queries:
-    answer = qa_chain.run(query)
-    print(f"Q: {query}\nA: {answer}\n")
+    queries = [
+        "How many distribution centers does Nike have in the US?",
+        "When was Nike founded?",
+        "How were Nike's margins impacted in 2023?",
+        "Give a short summary of the document"
+    ]
+
+    for query in queries:
+        answer = qa_chain.run(query)
+        print(f"Q: {query}\nA: {answer}\n")
+
+
+if __name__ == "__main__":
+    main()
