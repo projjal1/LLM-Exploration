@@ -1,0 +1,25 @@
+# Root requirements for the AI playground repository
+# Includes the main LangChain/Ollama stack plus example-specific dependencies.
+
+langchain
+langchain-core
+langchain-classic
+langchain-community
+langchain-text-splitters
+langchain-chroma
+langchain-ollama
+langchain-mcp-adapters
+langgraph
+transformers
+datasets
+accelerate
+pydantic
+typing-extensions
+python-dotenv
+pymongo
+pypdf
+requests
+python-chess
+eel
+pytest
+mcp
