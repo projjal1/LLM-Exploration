@@ -1,5 +1,8 @@
 # Using LangGraph to build a state machine for SQL query generation and execution
 
+from typing_extensions import runtime
+
+from accelerate import state
 from langchain_community.utilities import SQLDatabase
 from states import State, QueryOutput
 from langchain.chat_models import init_chat_model
@@ -41,7 +44,7 @@ query_prompt_template = ChatPromptTemplate(
 
 # Write function to generate SQL query
 def write_query(state: State):
-    """Generate SQL query to fetch information."""
+    """Generate SQL query to fetch information."""  
     prompt = query_prompt_template.invoke(
         {
             "dialect": db.dialect,
@@ -56,16 +59,22 @@ def write_query(state: State):
 
 # Write function to execute SQL query
 def execute_query(state: State):
-    """Execute SQL query."""
+    """Execute SQL query and return the result. If error occurs, return an error message."""
     execute_query_tool = QuerySQLDatabaseTool(db=db)
-    return {"result": execute_query_tool.invoke(state["query"])}
+
+    try: 
+        return {"result": execute_query_tool.invoke(state["query"])}
+    except Exception as e:
+        return {"result": "Error executing query"}
+    
 
 # Convert SQL result to natural language answer
 def generate_answer(state: State):
     """Answer question using retrieved information as context."""
     prompt = (
         "Given the following user question, corresponding SQL query, "
-        "and SQL result, answer the user question.\n\n"
+        "and SQL result, answer the user question. "
+        "Rephrase the answer to make it more natural and don't include any questions or sql queries.\n\n"
         f"Question: {state['question']}\n"
         f"SQL Query: {state['query']}\n"
         f"SQL Result: {state['result']}"
