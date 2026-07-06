@@ -285,6 +285,7 @@ def route_selector(state: RouterState) -> Literal[
 # 8. BUILD GRAPH
 # =========================================================
 
+# StateGraph with RouterState as the shared state
 graph = StateGraph(RouterState)
 
 # Nodes

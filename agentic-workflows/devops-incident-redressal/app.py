@@ -2,9 +2,11 @@
 # LLM-based router selects the appropriate specialist agent, which uses domain-specific tools to diagnose the issue 
 # and produce actionable commands, followed by a final summarized incident report.
 
+# Knowledge domains are: database, kubernetes, network, and CI/CD.
+
 from workflow import workflow
 
-
+# Short banner for the CLI
 def print_banner():
     print("\n" + "=" * 60)
     print("🚀 DEVOPS INCIDENT AI AGENT (LOCAL QWEN + LANGGRAPH)")
@@ -13,18 +15,23 @@ def print_banner():
     print("Type 'exit' to quit.")
     print("=" * 60 + "\n")
 
-
+# Main loop to run the agent
 def run_agent():
     print_banner()
 
+    # Loop to continuously accept incidents from the user
+    # Exit when user types 'exit'
     while True:
 
+        # Get user input for incident
         incident = input("\n🧑‍💻 Incident > ")
 
+        # Exit condition
         if incident.lower().strip() == "exit":
             print("\n👋 Shutting down agent...\n")
             break
 
+        # Check for empty input
         if not incident.strip():
             print("Please enter a valid incident.")
             continue

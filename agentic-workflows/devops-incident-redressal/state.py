@@ -1,7 +1,9 @@
 from typing import Literal, Optional, List
 from typing_extensions import TypedDict
 
-
+# =========================================================
+# Shared State Definition for DevOps Incident Response Agent
+# =========================================================
 class RouterState(TypedDict):
     """
     Shared state for the DevOps Incident Response Agent.
