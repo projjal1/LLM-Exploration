@@ -1,0 +1,10 @@
+# Minimal dependencies for the chess-simulation app
+# Core runtime
+eel
+langchain
+langchain-core
+langchain-ollama
+
+# Ollama runtime (local Ollama daemon is expected; not a pip package)
+# optional - useful for local move validation or utilities
+python-chess
