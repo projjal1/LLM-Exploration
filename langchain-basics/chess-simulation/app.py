@@ -9,15 +9,21 @@ from langchain_core.prompts import ChatPromptTemplate
 eel.init('web')
 
 # Initialize LangChain chat model via the modern helper
-model = init_chat_model("mistral:7b", model_provider="ollama")
+model = init_chat_model("qwen2.5:7b-instruct", model_provider="ollama")
 
 system_template = (
-    "You are a professional chess player. You will be given a FEN position and a numbered list "
-    "of legal moves in SAN notation. Reply with ONLY the number of the single best move and nothing else."
+    "You are a chess engine. Pick the strongest legal move for the side to move. "
+    "Reply with ONLY its number - no words, no punctuation."
+)
+
+user_template = (
+    "{turn} to move.\n\n"
+    "{board_ascii}\n\n"
+    "Legal moves:\n{legal_moves}"
 )
 
 prompt_template = ChatPromptTemplate.from_messages(
-    [("system", system_template), ("user", "FEN: {board_fen}\nLegal moves:\n{legal_moves}")]
+    [("system", system_template), ("user", user_template)]
 )
 
 
@@ -27,10 +33,13 @@ def get_ai_move(board_fen: str) -> str:
     if not legal_moves:
         return board_fen  # checkmate or stalemate: nothing left to play
 
+    turn = "White" if board.turn else "Black"
     san_moves = [board.san(move) for move in legal_moves]
     numbered = "\n".join(f"{i + 1}. {san}" for i, san in enumerate(san_moves))
 
-    prompt = prompt_template.invoke({"board_fen": board_fen, "legal_moves": numbered})
+    prompt = prompt_template.invoke(
+        {"turn": turn, "board_ascii": str(board), "legal_moves": numbered}
+    )
     response = model.invoke(prompt)
     content = getattr(response, "content", str(response)).strip()
     print(f"AI Response: {content}")
