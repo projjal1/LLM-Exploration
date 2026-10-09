@@ -223,6 +223,10 @@ def ask(question: str):
         "",
     )
 
+    print("\nGraph answer from Neo4j:")
+    print(graph_answer)
+    print("*" *90)
+
     # --------------------------------------------------------
     # STEP 2: EXTRACT DOCUMENT IDS
     # --------------------------------------------------------
@@ -232,7 +236,7 @@ def ask(question: str):
     print("================================")
 
     document_ids = extract_document_ids(
-        graph_result["result"]
+        graph_answer
     )
 
     print("\nExtracted document IDs from graph results:")
