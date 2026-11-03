@@ -1,0 +1,184 @@
+CREATE
+  (paymentsTeam:Team {
+    id: 'team-payments',
+    name: 'Payments Team'
+  }),
+
+  (platformTeam:Team {
+    id: 'team-platform',
+    name: 'Platform Engineering'
+  }),
+
+  (paymentService:Service {
+    id: 'service-payment',
+    name: 'PaymentService',
+    documentIds: [
+      'payment-service-runbook',
+      'payment-service-architecture',
+      'payment-incident-0814',
+      'payment-incident-0821'
+    ]
+  }),
+
+  (orderService:Service {
+    id: 'service-order',
+    name: 'OrderService',
+    documentIds: [
+      'order-service-runbook',
+      'order-service-architecture'
+    ]
+  }),
+
+  (notificationService:Service {
+    id: 'service-notification',
+    name: 'NotificationService',
+    documentIds: [
+      'notification-service-runbook',
+      'notification-service-architecture'
+    ]
+  }),
+
+  (paymentPostgres:Database {
+    id: 'db-payment-postgres',
+    name: 'Payment PostgreSQL',
+    technology: 'PostgreSQL',
+    documentIds: [
+      'postgres-troubleshooting',
+      'payment-service-architecture',
+      'payment-incident-0814',
+      'payment-incident-0821'
+    ]
+  }),
+
+  (orderPostgres:Database {
+    id: 'db-order-postgres',
+    name: 'Orders PostgreSQL',
+    technology: 'PostgreSQL',
+    documentIds: [
+      'order-service-architecture'
+    ]
+  }),
+
+  (productionRedis:Database {
+    id: 'db-production-redis',
+    name: 'Production Redis',
+    technology: 'Redis',
+    documentIds: [
+      'redis-troubleshooting',
+      'payment-service-architecture'
+    ]
+  }),
+
+  (productionCluster:KubernetesCluster {
+    id: 'k8s-production',
+    name: 'production-cluster',
+    documentIds: [
+      'kubernetes-production-guide',
+      'kubernetes-payment-deployment'
+    ]
+  }),
+
+  (productionNamespace:KubernetesNamespace {
+    id: 'namespace-production',
+    name: 'production'
+  }),
+
+  (paymentDeployment:Deployment {
+    id: 'deployment-payment',
+    name: 'payment-service-v2.4.1',
+    version: 'v2.4.1',
+    documentIds: [
+      'kubernetes-payment-deployment',
+      'payment-service-runbook'
+    ]
+  }),
+
+  (orderDeployment:Deployment {
+    id: 'deployment-order',
+    name: 'order-service-v3.1.0',
+    version: 'v3.1.0'
+  }),
+
+  (incidentRestart:Incident {
+    id: 'INC-2026-0814',
+    name: 'Payment pods repeatedly restarting',
+    documentIds: [
+      'payment-incident-0814'
+    ]
+  }),
+
+  (incidentTimeout:Incident {
+    id: 'INC-2026-0821',
+    name: 'Payment transaction timeout',
+    documentIds: [
+      'payment-incident-0821'
+    ]
+  }),
+
+  (rootCauseTimeout:RootCause {
+    id: 'rc-db-timeout',
+    name: 'PostgreSQL transaction timeout',
+    documentIds: [
+      'postgres-troubleshooting',
+      'payment-incident-0814'
+    ]
+  }),
+
+  (rootCausePool:RootCause {
+    id: 'rc-connection-pool',
+    name: 'PostgreSQL connection pool exhaustion',
+    documentIds: [
+      'postgres-troubleshooting',
+      'payment-incident-0821'
+    ]
+  });
+
+MATCH
+  (paymentsTeam:Team {id: 'team-payments'}),
+  (platformTeam:Team {id: 'team-platform'}),
+  (paymentService:Service {id: 'service-payment'}),
+  (orderService:Service {id: 'service-order'}),
+  (notificationService:Service {id: 'service-notification'}),
+  (paymentPostgres:Database {id: 'db-payment-postgres'}),
+  (orderPostgres:Database {id: 'db-order-postgres'}),
+  (productionRedis:Database {id: 'db-production-redis'}),
+  (productionCluster:KubernetesCluster {id: 'k8s-production'}),
+  (productionNamespace:KubernetesNamespace {id: 'namespace-production'}),
+  (paymentDeployment:Deployment {id: 'deployment-payment'}),
+  (orderDeployment:Deployment {id: 'deployment-order'}),
+  (incidentRestart:Incident {id: 'INC-2026-0814'}),
+  (incidentTimeout:Incident {id: 'INC-2026-0821'}),
+  (rootCauseTimeout:RootCause {id: 'rc-db-timeout'}),
+  (rootCausePool:RootCause {id: 'rc-connection-pool'})
+
+CREATE
+  (paymentsTeam)-[:OWNS]->(paymentService),
+  (paymentsTeam)-[:OWNS]->(notificationService),
+  (platformTeam)-[:OWNS]->(orderService),
+
+  (paymentService)-[:DEPENDS_ON]->(paymentPostgres),
+  (paymentService)-[:DEPENDS_ON]->(productionRedis),
+  (paymentService)-[:DEPENDS_ON]->(notificationService),
+
+  (orderService)-[:DEPENDS_ON]->(orderPostgres),
+
+  (paymentService)-[:RUNS_ON]->(productionCluster),
+  (orderService)-[:RUNS_ON]->(productionCluster),
+  (notificationService)-[:RUNS_ON]->(productionCluster),
+
+  (productionCluster)-[:CONTAINS]->(productionNamespace),
+
+  (paymentService)-[:HAS_DEPLOYMENT]->(paymentDeployment),
+  (orderService)-[:HAS_DEPLOYMENT]->(orderDeployment),
+
+  (paymentDeployment)-[:DEPLOYED_TO]->(productionNamespace),
+  (orderDeployment)-[:DEPLOYED_TO]->(productionNamespace),
+
+  (incidentRestart)-[:AFFECTS]->(paymentService),
+  (incidentTimeout)-[:AFFECTS]->(paymentService),
+
+  (incidentRestart)-[:CAUSED_BY]->(rootCauseTimeout),
+  (incidentTimeout)-[:CAUSED_BY]->(rootCausePool),
+
+  (rootCauseTimeout)-[:RELATED_TO]->(paymentPostgres),
+  (rootCausePool)-[:RELATED_TO]->(paymentPostgres);
