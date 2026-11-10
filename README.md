@@ -1,37 +1,34 @@
 # LangChain & Ollama AI Exploration
 
-This repository serves as an experimental playground to explore LangChain for building AI applications, leveraging Ollama as a local Large Language Model (LLM) backend.
+An experimental playground for building local AI applications and agentic workflows using **LangChain**, **LangGraph**, and **Ollama**, along with RAG, MCP tool calling, and lightweight LLM fine-tuning.
 
-## Overview
+## Summary
 
-LangChain is a powerful framework designed to simplify the development of applications powered by language models. In this project, we integrate LangChain with Ollama, a locally hosted LLM, to experiment with AI workflows without relying on cloud-based models.
+Each folder contains self-contained examples organized by topic:
 
-The goal is to understand how to:
-
-	•	Connect LangChain with a local LLM instance via Ollama
-	•	Build conversational agents and chain complex AI tasks
-	•	Explore local inference with privacy and latency benefits
-
-## Features
-	1	Setup and connect LangChain with Ollama local LLM
-	2	Basic conversational AI example using LangChain’s chains and prompts
-	3	Experimentation with local LLM prompt engineering and response handling
-	4	Extensible structure for adding advanced chains or integrations
+- **`langchain-basics/`** — Core LangChain & Ollama patterns including translation, stateful chat memory, structured extraction, sentiment classification, SQL and Neo4j Cypher Q&A, web summarization, and an Eel desktop chess simulation.
+- **`langgraph/`** — State-machine workflows using prompt chaining and generator/evaluator loops for email, essay, and joke refinement.
+- **`agentic-workflows/`** — Autonomous tool-calling agents and guardrails: customer order redressal, a DevOps incident router with domain specialists, and PII redaction/masking middleware.
+- **`rag-pipeline/`** — Retrieval-Augmented Generation pipelines: PDF document search with ChromaDB and hybrid GraphRAG incident analysis combining Neo4j and ChromaDB.
+- **`tool-calls/`** — External tool and protocol integrations, including a FastMCP flight-booking server/client backed by MongoDB and a Tavily + FAISS search agent.
+- **`foundation-llm-training/`** — Fine-tuning and inference testing on `distilgpt2` using Hugging Face `transformers`.
 
 ## Getting Started
 
-#### Pre-requisites
-	•	Python 3.8+
-	•	Ollama installed and running locally
-	•	LangChain Python package
-	•	Any additional dependencies listed in requirements.txt
+### Prerequisites
 
-#### Model Selection
-I am using a Macbook Pro with 16 GB of RAM. So I prefer to use lighweight models under 6-7 GB.
+- Python 3.8+
+- [Ollama](https://ollama.com/) installed and running locally
+- Dependencies installed via `pip install -r requirements.txt` (some subfolders also provide their own `requirements.txt`)
+- Example-specific services/keys where applicable: Neo4j, MongoDB, or `TAVILY_API_KEY` in a `.env` file
 
-My model selection strategy:
+### Model Selection
 
-	•	llama3:8b for general tasks and prompting
-    •	mistral:7b for tasks related to calling external tools
+Configured for a MacBook Pro (16 GB RAM) using lightweight local models under 6–7 GB:
 
-Run `ollama pull <model-name>` to download and use the model.
+- `llama3:8b` — General tasks, prompting, and basic RAG
+- `mistral:7b` — Tool calling, structured output, and refinement chains
+- `qwen3:8b` / `qwen2.5:7b-instruct` — Agent routing, Cypher/GraphRAG, and chess simulation
+- `nomic-embed-text` — Local embeddings for GraphRAG
+
+Run `ollama pull <model-name>` to download a model, then run any example from its folder (for example, `python app.py`).
