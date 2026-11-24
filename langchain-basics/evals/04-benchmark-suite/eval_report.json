@@ -1,0 +1,59 @@
+{
+  "model": "qwen3:8b",
+  "pass_rate": 75.0,
+  "passed_count": 3,
+  "total_count": 4,
+  "avg_latency": 19.63,
+  "results": [
+    {
+      "id": "TC-FACT-01",
+      "category": "Factual QA",
+      "eval_type": "reference",
+      "passed": true,
+      "gen_latency": 21.39,
+      "eval_latency": 10.16,
+      "meta": {
+        "score": "1/5",
+        "reasoning": "The candidate's answer is factually correct and aligns perfectly with the reference. It accurately states the boiling point of water at standard atmospheric pressure (1 atm or 101.325 kPa) as 100\u00b0C and 212\u00b0F. The explanation of the Celsius and Fahrenheit scales, their reference points, and the conversion formula are all accurate. The calculation of 212\u00b0F from 100\u00b0C using the formula F = (9/5)C + 32 is correct. The candidate also correctly contextualizes the reference to standard atmospheric pressure, matching the reference's mention of 'standard sea-level pressure.' No factual errors are present."
+      }
+    },
+    {
+      "id": "TC-FACT-02",
+      "category": "Factual QA",
+      "eval_type": "reference",
+      "passed": true,
+      "gen_latency": 19.98,
+      "eval_latency": 14.08,
+      "meta": {
+        "score": "1/5",
+        "reasoning": "The candidate's answer is factually correct and aligns with the reference. It accurately identifies Mars as the Red Planet and correctly attributes the reddish appearance to iron oxide (rust) on its surface. The additional points about dust storms and the cultural connection to the Roman god of war are not explicitly mentioned in the reference but are scientifically valid explanations. The candidate's inclusion of these details does not contradict the reference and enhances the explanation without introducing inaccuracies. The summary also correctly ties the iron oxide to the red color and acknowledges the cultural symbolism. Overall, the answer is factually accurate and comprehensive, though slightly more detailed than the reference."
+      }
+    },
+    {
+      "id": "TC-RULE-01",
+      "category": "Rule-Based Format",
+      "eval_type": "rule_keywords",
+      "passed": false,
+      "gen_latency": 7.84,
+      "eval_latency": 0.0,
+      "meta": {
+        "missing_keywords": [],
+        "word_count": 32,
+        "max_words": 30
+      }
+    },
+    {
+      "id": "TC-RUBRIC-01",
+      "category": "Qualitative Rubric",
+      "eval_type": "rubric",
+      "passed": true,
+      "gen_latency": 29.31,
+      "eval_latency": 14.32,
+      "meta": {
+        "clarity": "5/5",
+        "adherence": "5/5",
+        "reasoning": "The candidate effectively uses the spinning coin analogy to explain quantum superposition, making it relatable to a 10-year-old. They employ playful language (e.g., 'magic coin,' 'superhero wearing two hats,' 'ice cream') and emojis to maintain engagement. The explanation is clear, structured, and includes a real-world application (quantum computers) to reinforce the concept. The analogy is simplified without sacrificing accuracy, and the tone is age-appropriate and enthusiastic. The only minor point is the use of 'magic coin' instead of a regular coin, but this enhances the analogy's whimsy for a child. Overall, the response excels in all rubric criteria."
+      }
+    }
+  ]
+}
